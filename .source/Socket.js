@@ -100,15 +100,18 @@ export class Socket
 
 			if(typeof packet !== 'object')
 			{
-				callback(
-					event
-					, event.data
-					, null
-					, 'server'
-					, 0
-					, null
-					, packet
-				);
+				if(channel === '')
+				{
+					callback(
+						event
+						, event.data
+						, null
+						, 'server'
+						, 0
+						, null
+						, packet
+					);
+				}
 				return;
 			}
 
@@ -177,11 +180,13 @@ export class Socket
 	{
 		if(channel == parseInt(channel))
 		{
-			
-			if(message.byteLength)
+			if(message instanceof ArrayBuffer)
+			{
+				message = new Uint8Array(message);
+			}
+			else if(message.byteLength)
 			{
 				message = new Uint8Array(message.buffer);
-
 			}
 			else if(!Array.isArray(message))
 			{
@@ -192,19 +197,14 @@ export class Socket
 				new Uint16Array([channel]).buffer
 			);
 
-			let bytes = [];
+			let sendBuffer = new Uint8Array(
+				channelBytes.byteLength + message.byteLength
+			);
 
-			for(let i in channelBytes)
-			{
-				bytes[i] = channelBytes[i];
-			}
-
-			for(let i = 0; i < message.length; i++)
-			{
-				bytes[i + 2] = message[i];
-			}
+			sendBuffer.set(channelBytes, 0);
+			sendBuffer.set(message, channelBytes.byteLength);
 			
-			this.send(new Uint8Array(bytes));
+			this.send(sendBuffer);
 
 			return;
 		}
@@ -223,10 +223,7 @@ export class Socket
 					{
 						let message = this.openQueue.shift();
 
-						setTimeout(()=>{
-							this.send(message);
-						}, 100 * (this.openQueue.length + 1));
-
+						this.send(message);
 					}
 
 					this.socket.removeEventListener('open', c);
