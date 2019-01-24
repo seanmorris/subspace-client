@@ -91,7 +91,9 @@ var Socket = exports.Socket = function () {
 					}
 
 					if ((typeof packet === 'undefined' ? 'undefined' : _typeof(packet)) !== 'object') {
-						callback(event, event.data, null, 'server', 0, null, packet);
+						if (channel === '') {
+							callback(event, event.data, null, 'server', 0, null, packet);
+						}
 						return;
 					}
 
@@ -133,8 +135,9 @@ var Socket = exports.Socket = function () {
 		key: 'publish',
 		value: function publish(channel, message) {
 			if (channel == parseInt(channel)) {
-
-				if (message.byteLength) {
+				if (message instanceof ArrayBuffer) {
+					message = new Uint8Array(message);
+				} else if (message.byteLength) {
 					message = new Uint8Array(message.buffer);
 				} else if (!Array.isArray(message)) {
 					message = [message];
@@ -142,17 +145,12 @@ var Socket = exports.Socket = function () {
 
 				var channelBytes = new Uint8Array(new Uint16Array([channel]).buffer);
 
-				var bytes = [];
+				var sendBuffer = new Uint8Array(channelBytes.byteLength + message.byteLength);
 
-				for (var i in channelBytes) {
-					bytes[i] = channelBytes[i];
-				}
+				sendBuffer.set(channelBytes, 0);
+				sendBuffer.set(message, channelBytes.byteLength);
 
-				for (var _i = 0; _i < message.length; _i++) {
-					bytes[_i + 2] = message[_i];
-				}
-
-				this.send(new Uint8Array(bytes));
+				this.send(sendBuffer);
 
 				return;
 			}
@@ -168,16 +166,11 @@ var Socket = exports.Socket = function () {
 				return new Promise(function (accept, reject) {
 					var connectionOpened = function (c) {
 						return function (event) {
-							var _loop = function _loop() {
-								var message = _this.openQueue.shift();
-
-								setTimeout(function () {
-									_this.send(message);
-								}, 100 * (_this.openQueue.length + 1));
-							};
 
 							while (_this.openQueue.length) {
-								_loop();
+								var _message = _this.openQueue.shift();
+
+								_this.send(_message);
 							}
 
 							_this.socket.removeEventListener('open', c);
