@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"author": "Sean Morris <contact@seanmorr.is> (https://seanmorr.is)",
 	"scripts": {
-		"build": "babel .source --presets babel-preset-latest --out-dir .",
+		"build": "babel .source --presets babel-preset-latest --out-dir ."
 	},
 	"devDependencies": {
 		"babel-cli": "^6.26.0",
