@@ -1,6 +1,6 @@
 {
 	"name": "subspace-client",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"author": "Sean Morris <contact@seanmorr.is> (https://seanmorr.is)",
 	"scripts": {
 		"build": "babel .source --presets babel-preset-latest --out-dir ."
