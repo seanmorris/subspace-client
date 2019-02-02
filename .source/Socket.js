@@ -9,7 +9,7 @@ export class Socket
 			this.sockets = {};
 		}
 
-		if(1 || refresh || !this.sockets[url])
+		if(refresh || !this.sockets[url])
 		{
 			this.sockets[url] = new this(
 				new WebSocket(url)
