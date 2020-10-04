@@ -1,6 +1,6 @@
 {
 	"name": "subspace-client",
-	"version": "0.0.5",
+	"version": "0.0.6",
 	"author": "Sean Morris <subspace@seanmorr.is> (https://seanmorr.is)",
 	"devDependencies": {
 		"@babel/cli": "^7.8.4",
@@ -13,7 +13,9 @@
 		"brunch": "^2.10.17"
 	},
 	"files": [
+		"Socket.js",
 		"Channel.js",
-		"Socket.js"
+		"dist/subspace-client.js",
+		"dist/subspace-client.min.js"
 	]
 }
