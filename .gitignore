@@ -1,0 +1,8 @@
+*/
+!/source
+!/source/**
+!/build
+!/build/**
+!/dist
+!/dist/**
+/*.js

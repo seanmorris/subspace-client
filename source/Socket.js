@@ -9,7 +9,7 @@ export class Socket
 			this.sockets = {};
 		}
 
-		if(1 || refresh || !this.sockets[url])
+		if(refresh || !this.sockets[url])
 		{
 			this.sockets[url] = new this(
 				new WebSocket(url)
@@ -167,7 +167,7 @@ export class Socket
 
 		if(channel in this.listenerCount && this.listenerCount[channel] > 0)
 		{
-			
+
 		}
 		else
 		{
@@ -203,7 +203,7 @@ export class Socket
 
 			sendBuffer.set(channelBytes, 0);
 			sendBuffer.set(message, channelBytes.byteLength);
-			
+
 			this.send(sendBuffer);
 
 			return;
@@ -218,7 +218,7 @@ export class Socket
 		{
 			return new Promise((accept, reject) => {
 				let connectionOpened = ((c) => (event) => {
-					
+
 					while(this.openQueue.length)
 					{
 						let message = this.openQueue.shift();
@@ -229,14 +229,14 @@ export class Socket
 					this.socket.removeEventListener('open', c);
 
 					accept();
-					
+
 				})(connectionOpened);
 
 				this.socket.addEventListener('open', connectionOpened);
 
 				this.openQueue.unshift(message);
 			});
-		}	
+		}
 
 		for(let i in this._onSend)
 		{
