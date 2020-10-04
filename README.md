@@ -17,13 +17,13 @@ $ npm i subspace-client
 
 subspace-client is also available from unpkg:
 
-minified: https://unpkg.com/subspace-client@0.0.5/dist/subspace-client.min.js
+minified: https://unpkg.com/subspace-client@0.0.6/dist/subspace-client.min.js
 
 ```html
 <script src = "https://unpkg.com/subspace-client@0.0.6/dist/subspace-client.min.js"></script>
 ```
 
-uncompressed: https://unpkg.com/subspace-client@0.0.5/dist/subspace-client.js
+uncompressed: https://unpkg.com/subspace-client@0.0.6/dist/subspace-client.js
 
 ```html
 <script src = "https://unpkg.com/subspace-client@0.0.6/dist/subspace-client.js"></script>
