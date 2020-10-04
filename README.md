@@ -89,6 +89,19 @@ socket.subscribe('message:chat:cats:*', (event, message, channel, origin, origin
 });
 ```
 
+#### Unsubscribing
+
+Muliple part of your application can subscribe to the same channel on the same socket.
+
+You can clean these subscriptions up with `socket.unsubscribe(channel)`. This way the server will know to stop sending messages we're no longer interested in.
+
+The library will maintain a count of subscriptions by **explicit** channel name selectors. Subspace will only unsubscribe at the server once this count reaches zero.
+
+
+```javascript
+socket.subscribe('message:chat:cats:chat');
+```
+
 #### Sending
 
 Publish messages to a channel with `socket.publish(channel, message)`
