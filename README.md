@@ -2,7 +2,7 @@
 
 # Subspace Client
 
-Browser-side code for SubSpace sockets.
+Browser-side code for Subspace sockets.
 
 ## Installing
 
@@ -36,14 +36,14 @@ uncompressed: https://unpkg.com/subspace-client@0.0.7/dist/subspace-client.js
 Open a connection to a host (or get a reference to an existing connection) with `Socket.get(HOST)`. By default only one connection to each host will be made.
 
 ```javascript
-const host   = 'wss://your-socket-host';
+const host   = 'ws://your-socket-host';  // use wss: for SSL
 const socket = Socket.get(host);
 ```
 
 Force a new connection by passing the `refresh` boolean as the second parameter:
 
 ```javascript
-const host      = 'wss://your-socket-host';
+const host      = 'ws://your-socket-host';  // use wss: for SSL
 const socket    = Socket.get(host);
 const otherSock = Socket.get(host, true);
 ```
