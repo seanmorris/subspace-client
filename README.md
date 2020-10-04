@@ -52,8 +52,8 @@ const otherSock = Socket.get(host, true);
 
 Listen for messages &other events on a socket/channel with `socket.subscribe()`
 
-```
-const host   = 'wss://your-socket-host';
+```javascript
+const host   = 'ws://your-socket-host'; // use wss: for SSL
 const socket = Socket.get(host);
 
 socket.subscribe('open',  () => console.log('socket ready!'));
@@ -73,8 +73,8 @@ socket.subscribe('message', (event, message, channel, origin, originId, original
 
 You can subscribe to messages matching only a given set of channels by appending a channel name selector to the first parameter (see *Using Channels* below)
 
-```
-const host   = 'wss://your-socket-host';
+```javascript
+const host   = 'ws://your-socket-host'; // use wss: for SSL
 const socket = Socket.get(host);
 
 socket.subscribe('message:chat:cats:*', (event, message, channel, origin, originId, originalChannel) => {
@@ -93,8 +93,8 @@ socket.subscribe('message:chat:cats:*', (event, message, channel, origin, origin
 
 Publish messages to a channel with `socket.publish(channel, message)`
 
-```
-const host    = 'wss://your-socket-host';
+```javascript
+const host    = 'ws://your-socket-host';  // use wss: for SSL
 const socket  = Socket.get(host);
 const channel = 0;
 const message = 'This is the payload.';

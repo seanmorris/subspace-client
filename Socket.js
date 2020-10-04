@@ -1,219 +1,214 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
-	value: true
+  value: true
 });
-exports.Socket = undefined;
+exports.Socket = void 0;
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+var _Channel = require("./Channel");
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _Channel = require('./Channel');
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Socket = exports.Socket = function () {
-	_createClass(Socket, null, [{
-		key: 'get',
-		value: function get(url) {
-			var refresh = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-			if (!this.sockets) {
-				this.sockets = {};
-			}
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-			if (refresh || !this.sockets[url]) {
-				this.sockets[url] = new this(new WebSocket(url));
-			}
+var Socket = /*#__PURE__*/function () {
+  _createClass(Socket, null, [{
+    key: "get",
+    value: function get(url) {
+      var refresh = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-			return this.sockets[url];
-		}
-	}]);
+      if (!this.sockets) {
+        this.sockets = {};
+      }
 
-	function Socket(socket) {
-		_classCallCheck(this, Socket);
+      if (refresh || !this.sockets[url]) {
+        this.sockets[url] = new this(new WebSocket(url));
+      }
 
-		this.socket = socket;
-		socket.binaryType = 'arraybuffer';
-		this.data = {};
-		this.listenerCount = {};
-		this.openQueue = [];
-		this._onSend = [];
-	}
+      return this.sockets[url];
+    }
+  }]);
 
-	_createClass(Socket, [{
-		key: 'subscribe',
-		value: function subscribe(type, wildType, callback) {
-			var splitType = type.split(':');
-			var mainType = splitType.shift();
-			var channel = splitType.join(':');
+  function Socket(socket) {
+    _classCallCheck(this, Socket);
 
-			if (wildType instanceof Function) {
-				callback = wildType;
-				wildType = channel;
-			}
+    this.socket = socket;
+    socket.binaryType = 'arraybuffer';
+    this.data = {};
+    this.listenerCount = {};
+    this.openQueue = [];
+    this._onSend = [];
+  }
 
-			if (channel) {
-				if (!(channel in this.listenerCount)) {
-					this.listenerCount[channel] = 0;
-				}
+  _createClass(Socket, [{
+    key: "subscribe",
+    value: function subscribe(type, wildType, callback) {
+      var splitType = type.split(':');
+      var mainType = splitType.shift();
+      var channel = splitType.join(':');
 
-				this.listenerCount[channel]++;
+      if (wildType instanceof Function) {
+        callback = wildType;
+        wildType = channel;
+      }
 
-				this.send('sub ' + channel);
-			}
+      if (channel) {
+        if (!(channel in this.listenerCount)) {
+          this.listenerCount[channel] = 0;
+        }
 
-			var finalCallback = function (mainType, wildType, channel, callback) {
-				return function (event) {
+        this.listenerCount[channel]++;
+        this.send("sub ".concat(channel));
+      }
 
-					var packet = {};
+      var finalCallback = function (mainType, wildType, channel, callback) {
+        return function (event) {
+          var packet = {};
 
-					try {
-						if (typeof event.data == 'string') {
-							packet = JSON.parse(event.data);
-						} else if (event.data instanceof ArrayBuffer) {
-							var channelNumber = new Uint16Array(event.data, 4, 1)[0];
+          try {
+            if (typeof event.data == 'string') {
+              packet = JSON.parse(event.data);
+            } else if (event.data instanceof ArrayBuffer) {
+              var channelNumber = new Uint16Array(event.data, 4, 1)[0];
 
-							if (!wildType || _Channel.Channel.compareNames(wildType, channelNumber)) {
-								callback(event, event.data.slice(6), channelNumber, new Uint16Array(event.data, 0, 1)[0] ? 'user' : 'server', new Uint16Array(event.data, 2, 1)[0], null, {});
-								return;
-							}
-						} else if (mainType !== 'message') {
-							callback(event);
-							return;
-						}
-					} catch (e) {
-						if (mainType !== 'message') {
-							callback(event);
-						}
-						return;
-					}
+              if (!wildType || _Channel.Channel.compareNames(wildType, channelNumber)) {
+                callback(event, event.data.slice(6), channelNumber, new Uint16Array(event.data, 0, 1)[0] ? 'user' : 'server', new Uint16Array(event.data, 2, 1)[0], null, {});
+                return;
+              }
+            } else if (mainType !== 'message') {
+              callback(event);
+              return;
+            }
+          } catch (e) {
+            if (mainType !== 'message') {
+              callback(event);
+            }
 
-					if ((typeof packet === 'undefined' ? 'undefined' : _typeof(packet)) !== 'object') {
-						if (channel === '') {
-							callback(event, event.data, null, 'server', 0, null, packet);
-						}
-						return;
-					}
+            return;
+          }
 
-					if (!wildType) {
-						callback(event, packet.message, null, packet.origin, packet.originId, null, packet);
-					}
+          if (_typeof(packet) !== 'object') {
+            if (channel === '') {
+              callback(event, event.data, null, 'server', 0, null, packet);
+            }
 
-					if (wildType && 'channel' in packet) {
-						if (_Channel.Channel.compareNames(wildType, packet.channel)) {
-							callback(event, packet.message, packet.channel, packet.origin, packet.originId, packet.originalChannel, packet);
-						}
-					}
-				};
-			}(mainType, wildType, channel, callback);
+            return;
+          }
 
-			this.socket.addEventListener(mainType, finalCallback);
+          if (!wildType) {
+            callback(event, packet.message, null, packet.origin, packet.originId, null, packet);
+          }
 
-			return finalCallback;
-		}
-	}, {
-		key: 'unsubscribe',
-		value: function unsubscribe(type, callback) {
-			var splitType = type.split(':');
-			var mainType = splitType.shift();
-			var channel = splitType.join(':');
+          if (wildType && 'channel' in packet) {
+            if (_Channel.Channel.compareNames(wildType, packet.channel)) {
+              callback(event, packet.message, packet.channel, packet.origin, packet.originId, packet.originalChannel, packet);
+            }
+          }
+        };
+      }(mainType, wildType, channel, callback);
 
-			if (!channel) {
-				return;
-			}
+      this.socket.addEventListener(mainType, finalCallback);
+      return finalCallback;
+    }
+  }, {
+    key: "unsubscribe",
+    value: function unsubscribe(type, callback) {
+      var splitType = type.split(':');
+      var mainType = splitType.shift();
+      var channel = splitType.join(':');
 
-			this.listenerCount[channel]--;
+      if (!channel) {
+        return;
+      }
 
-			if (channel in this.listenerCount && this.listenerCount[channel] > 0) {} else {
-				this.socket.removeEventListener(mainType, callback);
-				this.send('unsub ' + channel);
-			}
-		}
-	}, {
-		key: 'publish',
-		value: function publish(channel, message) {
-			if (channel == parseInt(channel)) {
-				if (message instanceof ArrayBuffer) {
-					message = new Uint8Array(message);
-				} else if (message.byteLength) {
-					message = new Uint8Array(message.buffer);
-				} else if (!Array.isArray(message)) {
-					message = [message];
-				}
+      this.listenerCount[channel]--;
 
-				var channelBytes = new Uint8Array(new Uint16Array([channel]).buffer);
+      if (channel in this.listenerCount && this.listenerCount[channel] > 0) {} else {
+        this.socket.removeEventListener(mainType, callback);
+        this.send("unsub ".concat(channel));
+      }
+    }
+  }, {
+    key: "publish",
+    value: function publish(channel, message) {
+      if (channel == parseInt(channel)) {
+        if (message instanceof ArrayBuffer) {
+          message = new Uint8Array(message);
+        } else if (message.byteLength) {
+          message = new Uint8Array(message.buffer);
+        } else if (!Array.isArray(message)) {
+          message = [message];
+        }
 
-				var sendBuffer = new Uint8Array(channelBytes.byteLength + message.byteLength);
+        var channelBytes = new Uint8Array(new Uint16Array([channel]).buffer);
+        var sendBuffer = new Uint8Array(channelBytes.byteLength + message.byteLength);
+        sendBuffer.set(channelBytes, 0);
+        sendBuffer.set(message, channelBytes.byteLength);
+        this.send(sendBuffer);
+        return;
+      }
 
-				sendBuffer.set(channelBytes, 0);
-				sendBuffer.set(message, channelBytes.byteLength);
+      this.send("pub ".concat(channel, " ").concat(message));
+    }
+  }, {
+    key: "send",
+    value: function send(message) {
+      var _this = this;
 
-				this.send(sendBuffer);
+      if (this.socket.readyState !== this.socket.OPEN) {
+        return new Promise(function (accept, reject) {
+          var connectionOpened = function (c) {
+            return function (event) {
+              while (_this.openQueue.length) {
+                var _message = _this.openQueue.shift();
 
-				return;
-			}
+                _this.send(_message);
+              }
 
-			this.send('pub ' + channel + ' ' + message);
-		}
-	}, {
-		key: 'send',
-		value: function send(message) {
-			var _this = this;
+              _this.socket.removeEventListener('open', c);
 
-			if (this.socket.readyState !== this.socket.OPEN) {
-				return new Promise(function (accept, reject) {
-					var connectionOpened = function (c) {
-						return function (event) {
+              accept();
+            };
+          }(connectionOpened);
 
-							while (_this.openQueue.length) {
-								var _message = _this.openQueue.shift();
+          _this.socket.addEventListener('open', connectionOpened);
 
-								_this.send(_message);
-							}
+          _this.openQueue.unshift(message);
+        });
+      }
 
-							_this.socket.removeEventListener('open', c);
+      for (var i in this._onSend) {
+        this._onSend[i](message);
+      }
 
-							accept();
-						};
-					}(connectionOpened);
+      this.socket.send(message);
+      return Promise.resolve();
+    }
+  }, {
+    key: "onSend",
+    value: function onSend(callback) {
+      this._onSend.push(callback);
+    }
+  }, {
+    key: "close",
+    value: function close(message) {
+      this.socket.close();
+    }
+  }, {
+    key: "ping",
+    value: function ping() {// this.socket.ping();
+    }
+  }, {
+    key: "pong",
+    value: function pong() {// this.socket.pong();
+    }
+  }]);
 
-					_this.socket.addEventListener('open', connectionOpened);
-
-					_this.openQueue.unshift(message);
-				});
-			}
-
-			for (var i in this._onSend) {
-				this._onSend[i](message);
-			}
-
-			this.socket.send(message);
-
-			return Promise.resolve();
-		}
-	}, {
-		key: 'onSend',
-		value: function onSend(callback) {
-			this._onSend.push(callback);
-		}
-	}, {
-		key: 'close',
-		value: function close(message) {
-			this.socket.close();
-		}
-	}, {
-		key: 'ping',
-		value: function ping() {
-			// this.socket.ping();
-		}
-	}, {
-		key: 'pong',
-		value: function pong() {
-			// this.socket.pong();
-		}
-	}]);
-
-	return Socket;
+  return Socket;
 }();
+
+exports.Socket = Socket;
