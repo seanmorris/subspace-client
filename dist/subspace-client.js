@@ -11,7 +11,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var Channel = /*#__PURE__*/function () {
+var Channel = function () {
   function Channel() {
     _classCallCheck(this, Channel);
   }
@@ -39,12 +39,10 @@ var Channel = /*#__PURE__*/function () {
     }
   }, {
     key: "isRange",
-    value: function isRange(name) {// return /\*/.exec(name);
-    }
+    value: function isRange(name) {}
   }, {
     key: "containsRange",
-    value: function containsRange(name) {// return /\*/.exec(name);
-    }
+    value: function containsRange(name) {}
   }, {
     key: "compareNames",
     value: function compareNames(a, b) {
@@ -149,7 +147,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var Socket = /*#__PURE__*/function () {
+var Socket = function () {
   _createClass(Socket, null, [{
     key: "get",
     value: function get(url) {
@@ -334,12 +332,10 @@ var Socket = /*#__PURE__*/function () {
     }
   }, {
     key: "ping",
-    value: function ping() {// this.socket.ping();
-    }
+    value: function ping() {}
   }, {
     key: "pong",
-    value: function pong() {// this.socket.pong();
-    }
+    value: function pong() {}
   }]);
 
   return Socket;

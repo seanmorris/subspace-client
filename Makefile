@@ -5,7 +5,8 @@ build:
 	cp -rv build/* ./
 
 build-prod:
-	npx babel source --out-file dist/subspace-client.js
+	npx babel source/ --no-comments --out-file dist/subspace-client.js
+	npx babel source/ --presets=babel-preset-minify --no-comments --out-file dist/subspace-client.min.js
 
 dependencies:
 	npm install
