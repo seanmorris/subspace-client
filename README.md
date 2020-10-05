@@ -99,7 +99,7 @@ socket.publish(say, {cc, bcc}, message);
 
 #### Receiving
 
-Listen for messages &other events on a socket/channel with `socket.subscribe()`
+Listen for messages & other events on a socket/channel with `socket.subscribe()`
 
 ```javascript
 const host   = 'ws://your-socket-host'; // use wss: for SSL
