@@ -76,7 +76,7 @@ socket.subscribe(eventName, (event, message, channel, origin, originId, original
 	message         // payload
 	channel         // channel message was received on
 	origin          // message origin (user or server)
-	originId        // uid if origin is user, 0 if origin is server
+	originId        // uid of sender
 	originalChannel // channel message was published on
 
 	console.log('message received!', message);
