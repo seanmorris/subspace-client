@@ -140,7 +140,7 @@ The library will maintain a count of subscriptions by **explicit** channel name 
 
 
 ```javascript
-socket.unsubscribe('message:chat:cats:chat');
+socket.unsubscribe('message:chat:cats:main');
 ```
 
 ### Using Channels
