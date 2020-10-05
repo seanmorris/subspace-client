@@ -212,6 +212,54 @@ export class Socket
 		this.send(`pub ${channel} ${message}`);
 	}
 
+	say(channel, users, message)
+	{
+		const cc  = [];
+		const bcc = [];
+
+		if(Array.isArray(users))
+		{
+			Object.assign(cc, users);
+		}
+		else if(users.cc || users.bcc)
+		{
+			if(Array.isArray(users.cc))
+			{
+				Object.assign(cc, users.cc);
+			}
+			if(Array.isArray(users.bcc))
+			{
+				Object.assign(bcc, users.bcc);
+			}
+		}
+
+		if(!cc && !bcc)
+		{
+			let userListString = 'CANNOT STRINGIFY USERLIST'
+
+			try
+			{
+				userListString = JSON.stringify(users);
+			}
+			catch(error)
+			{
+				userlistString += ' ' + error.message;
+			}
+
+			throw error('Invalid userlist provided:' + userListString);
+		}
+
+		const ccString = cc.length
+			? `${cc.length} ${cc.join(' ')}`
+			: `0`;
+
+		const bccString = bcc.length
+			? `${bcc.length} ${bcc.join(' ')}`
+			: `0`;
+
+		this.send(`say ${channel} ${ccString} ${bccString} ${message}`);
+	}
+
 	send(message)
 	{
 		if(this.socket.readyState !== this.socket.OPEN)

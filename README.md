@@ -37,6 +37,7 @@ Open a connection to a host (or get a reference to an existing connection) with 
 
 ```javascript
 const host   = 'ws://your-socket-host';  // use wss: for SSL
+
 const socket = Socket.get(host);
 ```
 
@@ -45,7 +46,55 @@ Force a new connection by passing the `refresh` boolean as the second parameter:
 ```javascript
 const host      = 'ws://your-socket-host';  // use wss: for SSL
 const socket    = Socket.get(host);
+
 const otherSock = Socket.get(host, true);
+```
+
+#### Sending
+
+##### Broadcasting to all users on a channel
+
+Publish messages to a channel with `socket.publish(channel, message)`
+
+```javascript
+const host    = 'ws://your-socket-host';  // use wss: for SSL
+const socket  = Socket.get(host);
+
+const channel = 0;
+const message = 'This is the payload.';
+
+socket.publish(channel, message);
+```
+
+##### Sending private messages
+
+Send messages to certain users on a channel with `socket.say(channel, users, message)`
+
+```javascript
+const host    = 'ws://your-socket-host';  // use wss: for SSL
+const socket  = Socket.get(host);
+const message = 'This is the secret payload.';
+
+const channel = 0;
+const users   = [12, 15, 42];
+
+socket.publish(say, users, message);
+```
+
+You can also use an object with the keys `cc` and `bcc` to secretly send messages to certain users. Both `cc`and `bcc` are optional but **at least one** is required when using this notation.
+
+Users in the cc list will be sent with the message in the header. Users in the bcc list will remain private.
+
+```javascript
+const host    = 'ws://your-socket-host';  // use wss: for SSL
+const socket  = Socket.get(host);
+const message = 'This is the secret payload.';
+
+const channel = 0;
+const cc      = [12, 15, 42];
+const bcc     = [13, 16, 43];
+
+socket.publish(say, {cc, bcc}, message);
 ```
 
 #### Receiving
@@ -100,19 +149,6 @@ The library will maintain a count of subscriptions by **explicit** channel name 
 
 ```javascript
 socket.subscribe('message:chat:cats:chat');
-```
-
-#### Sending
-
-Publish messages to a channel with `socket.publish(channel, message)`
-
-```javascript
-const host    = 'ws://your-socket-host';  // use wss: for SSL
-const socket  = Socket.get(host);
-const channel = 0;
-const message = 'This is the payload.';
-
-socket.publish(channel, message);
 ```
 
 #### Using Channels

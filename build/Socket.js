@@ -155,6 +155,40 @@ var Socket = /*#__PURE__*/function () {
       this.send("pub ".concat(channel, " ").concat(message));
     }
   }, {
+    key: "say",
+    value: function say(channel, users, message) {
+      var cc = [];
+      var bcc = [];
+
+      if (Array.isArray(users)) {
+        Object.assign(cc, users);
+      } else if (users.cc || users.bcc) {
+        if (Array.isArray(users.cc)) {
+          Object.assign(cc, users.cc);
+        }
+
+        if (Array.isArray(users.bcc)) {
+          Object.assign(bcc, users.bcc);
+        }
+      }
+
+      if (!cc && !bcc) {
+        var userListString = 'CANNOT STRINGIFY USERLIST';
+
+        try {
+          userListString = JSON.stringify(users);
+        } catch (error) {
+          userlistString += ' ' + error.message;
+        }
+
+        throw error('Invalid userlist provided:' + userListString);
+      }
+
+      var ccString = cc.length ? "".concat(cc.length, " ").concat(cc.join(' ')) : "0";
+      var bccString = bcc.length ? "".concat(bcc.length, " ").concat(bcc.join(' ')) : "0";
+      this.send("say ".concat(channel, " ").concat(ccString, " ").concat(bccString, " ").concat(message));
+    }
+  }, {
     key: "send",
     value: function send(message) {
       var _this = this;
