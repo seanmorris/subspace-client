@@ -50,6 +50,39 @@ const socket    = Socket.get(host);
 const otherSock = Socket.get(host, true);
 ```
 
+#### Receiving
+
+Listen for messages & other events on a socket/channel with `socket.subscribe()`
+
+```javascript
+const host   = 'ws://your-socket-host'; // use wss: for SSL
+const socket = Socket.get(host);
+
+socket.subscribe('open',  () => console.log('socket ready!'));
+socket.subscribe('close', () => console.log('socket closed!'));
+```
+
+You can subscribe to messages matching only a given set of channels by prepending 'message:' to the a channel name selector, and using that string as the first parameter. See *Using Channels* below.
+
+```javascript
+const host   = 'ws://your-socket-host'; // use wss: for SSL
+const socket = Socket.get(host);
+
+const channels  = 'chat:cats:*';
+const eventName = `message:${channels}`;
+
+socket.subscribe(eventName, (event, message, channel, origin, originId, originalChannel) => {
+	event           // original event
+	message         // payload
+	channel         // channel message was received on
+	origin          // message origin (user or server)
+	originId        // uid if origin is user, 0 if origin is server
+	originalChannel // channel message was published on
+
+	console.log('message received!', message);
+});
+```
+
 #### Sending
 
 ##### Broadcasting to all users on a channel
@@ -69,6 +102,8 @@ socket.publish(channel, message);
 ##### Sending private messages
 
 Send messages to certain users on a channel with `socket.say(channel, users, message)`
+
+**User ids & channel ids (binary channels only) should be supplied in hex, counts should be in normal decimal.**
 
 ```javascript
 const host    = 'ws://your-socket-host';  // use wss: for SSL
@@ -97,47 +132,6 @@ const bcc     = [13, 16, 43];
 socket.publish(say, {cc, bcc}, message);
 ```
 
-#### Receiving
-
-Listen for messages & other events on a socket/channel with `socket.subscribe()`
-
-```javascript
-const host   = 'ws://your-socket-host'; // use wss: for SSL
-const socket = Socket.get(host);
-
-socket.subscribe('open',  () => console.log('socket ready!'));
-socket.subscribe('close', () => console.log('socket closed!'));
-
-socket.subscribe('message', (event, message, channel, origin, originId, originalChannel) => {
-	// event           - original event
-	// message         - payload
-	// channel         - channel message was received on
-	// origin          - message origin (user or server)
-	// originId        - uid if origin is user, 0 if origin is server
-	// originalChannel - channel message was published on
-
-	console.log('message received!', message);
-});
-```
-
-You can subscribe to messages matching only a given set of channels by appending a channel name selector to the first parameter (see *Using Channels* below)
-
-```javascript
-const host   = 'ws://your-socket-host'; // use wss: for SSL
-const socket = Socket.get(host);
-
-socket.subscribe('message:chat:cats:*', (event, message, channel, origin, originId, originalChannel) => {
-	// event           - original event
-	// message         - payload
-	// channel         - channel message was received on
-	// origin          - message origin (user or server)
-	// originId        - uid if origin is user, 0 if origin is server
-	// originalChannel - channel message was published on
-
-	console.log('message received!', message);
-});
-```
-
 #### Unsubscribing
 
 Muliple part of your application can subscribe to the same channel on the same socket.
@@ -151,7 +145,7 @@ The library will maintain a count of subscriptions by **explicit** channel name 
 socket.unsubscribe('message:chat:cats:chat');
 ```
 
-#### Using Channels
+### Using Channels
 
 Subspace divides its channels into two types: binary & text. Binary channels are numbered with integers, and text channels have textual names.
 
