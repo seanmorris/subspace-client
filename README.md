@@ -93,7 +93,7 @@ Publish messages to a channel with `socket.publish(channel, message)`
 const host    = 'ws://your-socket-host';  // use wss: for SSL
 const socket  = Socket.get(host);
 
-const channel = 0;
+const channel = 0x0;
 const message = 'This is the payload.';
 
 socket.publish(channel, message);
@@ -103,15 +103,13 @@ socket.publish(channel, message);
 
 Send messages to certain users on a channel with `socket.say(channel, users, message)`
 
-**User ids & channel ids (binary channels only) should be supplied in hex, counts should be in normal decimal.**
-
 ```javascript
 const host    = 'ws://your-socket-host';  // use wss: for SSL
 const socket  = Socket.get(host);
 const message = 'This is the secret payload.';
 
-const channel = 0;
-const users   = [12, 15, 42];
+const channel = 0x0;
+const users   = [0x12, 0x15, 0x42];
 
 socket.publish(say, users, message);
 ```
@@ -125,9 +123,9 @@ const host    = 'ws://your-socket-host';  // use wss: for SSL
 const socket  = Socket.get(host);
 const message = 'This is the secret payload.';
 
-const channel = 0;
-const cc      = [12, 15, 42];
-const bcc     = [13, 16, 43];
+const channel = 0x0;
+const cc      = [0x12, 0x15, 0x42];
+const bcc     = [0x13, 0x16, 0x43];
 
 socket.publish(say, {cc, bcc}, message);
 ```
