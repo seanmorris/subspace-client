@@ -68,6 +68,7 @@ var Socket = /*#__PURE__*/function () {
       var finalCallback = function (mainType, wildType, channel, callback) {
         return function (event) {
           var packet = {};
+          console.log(event);
 
           try {
             if (typeof event.data == 'string') {
