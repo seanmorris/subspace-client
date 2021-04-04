@@ -57,8 +57,6 @@ export class Socket
 
 			let packet = {};
 
-			console.log(event);
-
 			try
 			{
 				if(typeof event.data == 'string')
